@@ -8,6 +8,7 @@
 
 
 # sample cmds input "ls -al | grep config"$'\n'"pwd | head -1"$'\n'"uname | wc"
+# ./cnc.sh dub54-br-agg-r1 'show lldp neighbors | grep "dub2|dub3"'$'\n''show version | grep "hardware|platform|version"'
 
 host=$1
 if [ -f "$2" ]; then

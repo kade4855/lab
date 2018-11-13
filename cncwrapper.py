@@ -5,7 +5,7 @@ Things to add -
 Add verbose options
 Add output directory options
 Add multithreading
-
+Add password/odin
 Override 'show' command verification button
 '''
 
@@ -14,9 +14,12 @@ Override 'show' command verification button
 
 #import
 import argparse
-import subprocess
+from subprocess import run
 import os.path
 from sys import exit
+from shutil import copy2
+from os.path import expanduser
+
 #Parse Args
 parser = argparse.ArgumentParser(description="Wrapper for cnc.sh")
 parser.add_argument("--host", help = "Provide comma-separated hoss names or filename")
@@ -27,7 +30,6 @@ print(args.host)
 print(args.cmd)
 
 #Parse input files and create lists
-
 def file_to_list(file_name):
 	with open(file_name,'r') as f:
 		unformatted_output = [line.strip('\n') for line in f if (line != '\n' and line != '')]
@@ -38,39 +40,76 @@ def string_to_list(input_string):
 	unformatted_output = [v.strip('\n') for v in string_list if (v != '\n' and v != '')]
 	return [out.strip() for out in unformatted_output]
 
+#Verify cmd_list
+def verify_cmd_list(cmd_list):
+	verified_cmd_list = [cmd for cmd in cmd_list if cmd.startswith("show")]
+	if len(cmd_list) != len(verified_cmd_list):
+		print("missing 'show' for some command, only using valid show commands")
+	if bool(verified_cmd_list): return verified_cmd_list
+	else:
+		print("no valid commands found") 
+		exit()
+
+#verify host_list
+def verify_host_list(host_list):
+	if bool(host_list): return host_list
+	else:
+		print("no valid hosts found")
+		exit()
+
+#Convert verified_cmd_list to string(cnc.sh consumable)
+def convert_verified_cmd_list_to_string(verified_cmd_list):
+	verified_cmd_string = ''
+	for i in range(len(verified_cmd_list)-1):
+		verified_cmd_list.insert(2*i+1,"\n")
+	verified_cmd_string = ''.join(verified_cmd_list)
+	return verified_cmd_string
+
+#Call cnc to run ssh on each host
+#Copy output from ~/tmp/cnc_out.txt to new file named ~/<host>.txt
+def call_cnc(verified_host_list, verified_cmd_string):
+	home = expanduser("~")
+	for host in verified_host_list:
+		sub = run(["/Users/deodhk/githubclone/cnc.sh", host, verified_cmd_string])
+		copy2(home+'/tmp/cnc_out.txt',home+'/'+host+'.txt')
+
+
+'''
+Step 1: 
+Gather input from file or cmdline args
+Parse input(hosts and commands) and convert to lists
+'''
+
+#if "__name__" == "__main__":
 if os.path.isfile(args.host):
-	#print('found host file')
 	host_list = file_to_list(args.host)
 else: host_list = string_to_list(args.host)
-
 
 if os.path.isfile(args.cmd):
 	cmd_list = file_to_list(args.cmd)
 else: cmd_list = string_to_list(args.cmd)
 
-print(host_list,cmd_list)
+'''
+Step 2:
+Verify host_list and verify cmd_list
+'''
+verified_cmd_list = verify_cmd_list(cmd_list)
+verified_host_list = verify_host_list(host_list)
 
-#Verify cmd_list
-if all(cmd.startswith("show") for cmd in cmd_list):
-	print("commands valid")
-	bool_cmd_list = True
-else:
-	print("missing 'show' for some command")
-	exit()
+#Convert verified_cmd_list to string(cnc.sh consumable)
+verified_cmd_string = convert_verified_cmd_list_to_string(verified_cmd_list)
 
-#verify host_list
-if host_list:
-	bool_host_list = True
-else:
-	print("no valid hosts")
+# Print final sanitized cmds and hosts
+print("\nverified_host_list:\n {}\nverified_cmd_string:\n {}\n".format(verified_host_list, verified_cmd_string))
 
-#Call cnc
-if bool_host_list and bool_cmd_list:
-	call_cnc(host_list, cmd_list)
-
-	
-
+'''
+Step 3:
+Call cnc.sh for every host
+Copy the output from ~/tmp/cnc_out.txt to new ~/<hostname>.txt file
+'''
+call_cnc(verified_host_list, verified_cmd_string)
+exit()
 
 
-#Format output cnc_out.txt
+
 
