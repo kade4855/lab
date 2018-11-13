@@ -24,7 +24,8 @@ echo $cmds
 #show interface description
 #'''
 #echo $cmds1
+touch ~/cnc_out.txt
 
-ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no $host << EOF > ~/tmp/cnc_out.txt
+ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no $host << EOF > ~/cnc_out.txt
 $cmds
 EOF
