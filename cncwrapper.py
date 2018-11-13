@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 '''
+Author - Kaushal Deodhar
+
 Things to add -
 Add verbose options
 Add output directory options
@@ -12,13 +14,11 @@ Override 'show' command verification button
 
 #cnc wrapper script
 
-#import
 import argparse
+import os.path 
 from subprocess import run
-import os.path
 from sys import exit
 from shutil import copy2
-from os.path import expanduser
 
 #Parse Args
 example_input = '''Example:
@@ -27,12 +27,13 @@ cncwrapper.py --host hostinputfile.txt --cmd cmdinputfile.txt
 
 Sample:
 cncwrapper.py --host 'dub54-br-agg-r1, dub54-br-agg-r4' --cmd ' show configuration interfaces | display set | grep "xe-2/| ae", show lldp neighbor | grep "dub2|dub3"'
+
 '''
 parser = argparse.ArgumentParser(description="Wrapper for cnc.sh",
 								 epilog= example_input,
 								 formatter_class=argparse.RawDescriptionHelpFormatter)
-parser.add_argument("--host", help = "Provide comma-separated host names or filename")
-parser.add_argument("--cmd", help = "Provide comma-separated commands names or filename")
+parser.add_argument("--host", help = "Provide comma-separated host names in single quotes or filename")
+parser.add_argument("--cmd", help = "Provide comma-separated commands names in single quotes or filename")
 args = parser.parse_args()
 
 print(args.host)
@@ -77,9 +78,10 @@ def convert_verified_cmd_list_to_string(verified_cmd_list):
 #Call cnc to run ssh on each host
 #Copy output from ~/tmp/cnc_out.txt to new file named ~/<host>.txt
 def call_cnc(verified_host_list, verified_cmd_string):
-	home = expanduser("~")
+	home = os.path.expanduser("~")
+	module_dir = os.path.dirname(os.path.realpath(__file__))
 	for host in verified_host_list:
-		sub = run(["/Users/deodhk/githubclone/cnc.sh", host, verified_cmd_string])
+		sub = run([module_dir+"/cnc.sh", host, verified_cmd_string])
 		copy2(home+'/cnc_out.txt',home+'/'+host+'.txt')
 		print("output stored in {}".format(home+'/'+host+'.txt'))
 
