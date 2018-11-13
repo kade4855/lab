@@ -62,7 +62,8 @@ def verify_cmd_list(cmd_list):
 
 #verify host_list
 def verify_host_list(host_list):
-	if bool(host_list): return host_list
+	verified_host_list = list(set(host_list))
+	if bool(verified_host_list): return verified_host_list
 	else:
 		print("no valid hosts found")
 		exit()
