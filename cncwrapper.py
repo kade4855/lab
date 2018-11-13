@@ -21,8 +21,17 @@ from shutil import copy2
 from os.path import expanduser
 
 #Parse Args
-parser = argparse.ArgumentParser(description="Wrapper for cnc.sh")
-parser.add_argument("--host", help = "Provide comma-separated hoss names or filename")
+example_input = '''Example:
+cncwrapper.py --host 'host1, host2' --cmd 'show_cmd1, show_cmd2'
+cncwrapper.py --host hostinputfile.txt --cmd cmdinputfile.txt
+
+Sample:
+cncwrapper.py --host 'dub54-br-agg-r1, dub54-br-agg-r4' --cmd ' show configuration interfaces | display set | grep "xe-2/| ae", show lldp neighbor | grep "dub2|dub3"'
+'''
+parser = argparse.ArgumentParser(description="Wrapper for cnc.sh",
+								 epilog= example_input,
+								 formatter_class=argparse.RawDescriptionHelpFormatter)
+parser.add_argument("--host", help = "Provide comma-separated host names or filename")
 parser.add_argument("--cmd", help = "Provide comma-separated commands names or filename")
 args = parser.parse_args()
 
@@ -71,8 +80,8 @@ def call_cnc(verified_host_list, verified_cmd_string):
 	home = expanduser("~")
 	for host in verified_host_list:
 		sub = run(["/Users/deodhk/githubclone/cnc.sh", host, verified_cmd_string])
-		copy2(home+'/tmp/cnc_out.txt',home+'/'+host+'.txt')
-
+		copy2(home+'/cnc_out.txt',home+'/'+host+'.txt')
+		print("output stored in {}".format(home+'/'+host+'.txt'))
 
 '''
 Step 1: 
