@@ -1,5 +1,5 @@
 #!/bin/sh -
-#description     :This script will connect(ssh) into 1 device, and collect outputs and store it in ~/tmp/cnc_out.txt
+#description     :This script will connect(ssh) into 1 device, and collect outputs and store it in ~/cnc_out.txt
 #author		 :Kaushal Deodhar
 #date            :20181109
 #version         :0.1    
@@ -8,7 +8,7 @@
 
 
 # sample cmds input "ls -al | grep config"$'\n'"pwd | head -1"$'\n'"uname | wc"
-# ./cnc.sh dub54-br-agg-r1 'show lldp neighbors | grep "dub2|dub3"'$'\n''show version | grep "hardware|platform|version"'
+# ./cnc.sh router-1 'show lldp neighbors | grep "r2|r3"'$'\n''show version | grep "hardware|platform|version"'
 
 host=$1
 if [ -f "$2" ]; then
