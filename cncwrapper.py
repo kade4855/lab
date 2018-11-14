@@ -26,7 +26,7 @@ cncwrapper.py --host 'host1, host2' --cmd 'show_cmd1, show_cmd2'
 cncwrapper.py --host hostinputfile.txt --cmd cmdinputfile.txt
 
 Sample:
-cncwrapper.py --host 'dub54-br-agg-r1, dub54-br-agg-r4' --cmd ' show configuration interfaces | display set | grep "xe-2/| ae", show lldp neighbor | grep "dub2|dub3"'
+cncwrapper.py --host 'router-1, router-2' --cmd ' show configuration interfaces | display set | grep "xe-2/| ae", show lldp neighbor | grep "dub2|dub3"'
 
 '''
 parser = argparse.ArgumentParser(description="Wrapper for cnc.sh",
