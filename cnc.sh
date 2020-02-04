@@ -19,13 +19,24 @@ fi
 echo $1
 echo $cmds
 
+
+out_file=$3
+echo outputs stored in $out_file
+if [ ! -e $out_file ]
+then touch $out_file
+fi
+
+if [ ! -w $out_file ] || [ ! -r $out_file ]
+then chmod u+rw $out_file
+fi
+
 #cmds1=''' 
 #show version | grep platform
 #show interface description
 #'''
 #echo $cmds1
-touch ~/cnc_out.txt
 
-ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no $host << EOF > ~/cnc_out.txt
+
+ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no $host << EOF >> $out_file
 $cmds
 EOF
